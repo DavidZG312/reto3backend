@@ -7,6 +7,7 @@ package com.Reto2.Reto2.controllers;
 
 import com.Reto2.Reto2.models.Orders;
 import com.Reto2.Reto2.services.OrdersService;
+import java.util.Date;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
@@ -64,4 +65,21 @@ public class OrdersController {
     public List<Orders> findByZone(@PathVariable("zone") String zone) {
         return ordersService.findByZone(zone);
     }
+
+    //Reto 4:Ordenes de pedido asociadas a los asesores
+    @GetMapping("/salesman/{id}")
+    public List<Orders> findByZone(@PathVariable("id") Integer id) {
+        return ordersService.findBySalesManId(id);
+    }
+
+    @GetMapping("/state/{status}/{id}")
+    public List<Orders> getByIdSalesManIdAndStatus(@PathVariable("id") Integer id, @PathVariable("status") String status) {
+        return ordersService.getBySalesManIdAndStatus(id, status);
+    }
+
+    @GetMapping("/date/{registerDay}/{id}")
+    public List<Orders> getByRegisterDayAndSalesManId(@PathVariable("registerDay") String registerDay, @PathVariable("id") Integer id) {
+        return ordersService.getByRegisterDayAndSalesManId(registerDay, id);
+    }
+
 }

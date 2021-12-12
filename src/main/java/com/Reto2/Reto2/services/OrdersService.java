@@ -7,6 +7,7 @@ package com.Reto2.Reto2.services;
 
 import com.Reto2.Reto2.models.Orders;
 import com.Reto2.Reto2.repositories.OrdersRepository;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,4 +68,18 @@ public class OrdersService {
     public List<Orders> findByZone(String zone) {
         return ordersRepository.findByZone(zone);
     }
+    
+    //Ordenes de pedido asociadas al asesor
+    public List<Orders> findBySalesManId(Integer id) {
+        return ordersRepository.findBySalesManId(id);
+    }
+    
+    public List<Orders> getBySalesManIdAndStatus(Integer id, String status){
+        return ordersRepository.getBySalesManIdAndStatus(id, status);
+    }
+
+    public List<Orders> getByRegisterDayAndSalesManId(String registerDay, Integer id){
+        return ordersRepository.getByRegisterDayAndSalesManId(registerDay,id);
+    }
+    
 }
