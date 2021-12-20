@@ -26,55 +26,102 @@ public class UserService {
         return userRepository.getAll();
     }
 
-    public Users getById(Integer id) {
-        return userRepository.getById(id).orElse(null);
+    public Optional<Users> getUser(int id) {
+
+        return userRepository.getUser(id);
     }
 
-    public Users update(Users users) {
-        if (users.getId() == null) 
-            return users;
-        
+    public Users create(Users user) {
 
-        Optional<Users> existeUsuario = userRepository.getById(users.getId());
+        //obtiene el maximo id existente en la coleccion
+        Optional<Users> userIdMaximo = userRepository.lastUserId();
 
-        if (existeUsuario.isEmpty()) 
-            return users;
-        
+        //si el id del Usaurio que se recibe como parametro es nulo, entonces valida el maximo id existente en base de datos
+        if (user.getId() == null) {
+            //valida el maximo id generado, si no hay ninguno aun el primer id sera 1
+            if (userIdMaximo.isEmpty()) {
+                user.setId(1);
+            } //si retorna informacion suma 1 al maximo id existente y lo asigna como el codigo del usuario
+            else {
+                user.setId(userIdMaximo.get().getId() + 1);
+            }
+        }
 
-        return userRepository.save(users);
+        Optional<Users> e = userRepository.getUser(user.getId());
+        if (e.isEmpty()) {
+            if (emailExists(user.getEmail()) == false) {
+                return userRepository.create(user);
+            } else {
+                return user;
+            }
+        } else {
+            return user;
+        }
+
     }
 
-    public Users save(Users users) {
+    public Users update(Users user) {
 
-        if (users.getId() == null) 
-            return users;
-
-
-        Optional<Users> existeUsuario = userRepository.getById(users.getId());
-
-        if (existeUsuario.isPresent()) 
-            return users;
-        
-
-        return userRepository.save(users);
+        if (user.getId() != null) {
+            Optional<Users> userDb = userRepository.getUser(user.getId());
+            if (!userDb.isEmpty()) {
+                if (user.getIdentification() != null) {
+                    userDb.get().setIdentification(user.getIdentification());
+                }
+                if (user.getName() != null) {
+                    userDb.get().setName(user.getName());
+                }
+                if (user.getAddress() != null) {
+                    userDb.get().setAddress(user.getAddress());
+                }
+                if (user.getCellPhone() != null) {
+                    userDb.get().setCellPhone(user.getCellPhone());
+                }
+                if (user.getEmail() != null) {
+                    userDb.get().setEmail(user.getEmail());
+                }
+                if (user.getPassword() != null) {
+                    userDb.get().setPassword(user.getPassword());
+                }
+                if (user.getZone() != null) {
+                    userDb.get().setZone(user.getZone());
+                }
+                if (user.getType() != null) {
+                    userDb.get().setType(user.getType());
+                }
+                userRepository.update(userDb.get());
+                return userDb.get();
+            } else {
+                return user;
+            }
+        } else {
+            return user;
+        }
     }
 
-    public void delete(Integer id) {
-        userRepository.delete(id);
+    public boolean delete(int userId) {
+        Boolean aBoolean = getUser(userId).map(user -> {
+            userRepository.delete(user);
+            return true;
+        }).orElse(false);
+        return aBoolean;
     }
 
-    public boolean existeEmail(String email) {
-        return userRepository.existeEmail(email);
+    public boolean emailExists(String email) {
+        return userRepository.emailExists(email);
     }
 
-    public Users autenticarUsuario(String email, String password) {
-        Optional<Users> usuario = userRepository.autenticarUsuario(email, password);
+    public List<Users> findByMonthBirthtDay(String monthBirthtDay) {
+        return userRepository.findByMonthBirthtDay(monthBirthtDay);
+    }
+
+    public Users authenticateUser(String email, String password) {
+        Optional<Users> usuario = userRepository.authenticateUser(email, password);
 
         if (usuario.isEmpty()) {
-            return new Users(null, null, null, null, null, null, null, null, null, null, null);
+            return new Users();
         } else {
             return usuario.get();
         }
     }
-
 }

@@ -18,22 +18,37 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class ProductosRepository {
-      @Autowired
+
+    @Autowired
     private iProductosRepository crudRepository;
 
     public List<Productos> getAll() {
         return crudRepository.findAll();
     }
 
-    public Optional<Productos> getById(String reference) {
+    public Optional<Productos> getProductos(String reference) {
         return crudRepository.findById(reference);
     }
 
-    public Productos save(Productos productos) {
+    public Productos create(Productos productos) {
         return crudRepository.save(productos);
     }
 
-    public void delete(String reference) {
-        crudRepository.deleteById(reference);
+    public void update(Productos productos) {
+        crudRepository.save(productos);
+    }
+
+    public void delete(Productos productos) {
+        crudRepository.delete(productos);
+    }
+
+    //Reto 5
+    public List<Productos> productByPrice(double price) {
+        return crudRepository.findByPriceLessThanEqual(price);
+    }
+
+    //Reto 5
+    public List<Productos> findByDescriptionLike(String description) {
+        return crudRepository.findByDescriptionLike(description);
     }
 }

@@ -8,9 +8,11 @@ package com.Reto2.Reto2.controllers;
 import com.Reto2.Reto2.models.Productos;
 import com.Reto2.Reto2.services.ProductosService;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  *
@@ -26,8 +29,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @RestController
 @RequestMapping("/api/cookware")
+@CrossOrigin("*")
 public class ProductosController {
-        @Autowired
+
+    @Autowired
     private ProductosService productosService;
 
     @GetMapping("/all")
@@ -36,25 +41,36 @@ public class ProductosController {
     }
 
     @GetMapping("/{reference}")
-    public Productos getById(@PathVariable String reference) {
-        return productosService.getById(reference);
-    }
-
-    @PutMapping("/update")
-    public ResponseEntity<Productos> update(@RequestBody Productos productos) {
-        Productos p = productosService.update(productos);
-        return new ResponseEntity(p, HttpStatus.CREATED);
+    public Optional<Productos> getAccesory(@PathVariable("reference") String reference) {
+        return productosService.getProductos(reference);
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Productos> save(@RequestBody Productos productos) {
-        Productos p = productosService.save(productos);
-        return new ResponseEntity(p, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Productos create(@RequestBody Productos gadget) {
+        return productosService.create(gadget);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable String id) {
-        productosService.delete(id);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    @PutMapping("/update")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Productos update(@RequestBody Productos gadget) {
+        return productosService.update(gadget);
+    }
+
+    @DeleteMapping("/{reference}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public boolean delete(@PathVariable("reference") String reference) {
+        return productosService.delete(reference);
+    }
+
+    @GetMapping("/price/{price}")
+    public List<Productos> productByPrice(@PathVariable("price") double price) {
+        return productosService.productByPrice(price);
+    }
+
+    //Reto 5
+    @GetMapping("/description/{description}")
+    public List<Productos> findByDescriptionLike(@PathVariable("description") String description) {
+        return productosService.findByDescriptionLike(description);
     }
 }

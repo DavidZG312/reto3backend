@@ -23,9 +23,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "orders")
 public class Orders {
 
-    //public static String PENDING = "Pendiente";
-    //public static String APROVED = "Aprobada";
-    //public static String REJECTED = "Rechazada";
+    public static String PENDING = "Pendiente";
+    public static String APROVED = "Aprobada";
+    public static String REJECTED = "Rechazada";
+    
     @Id
     private Integer id;
     private Date registerDay;

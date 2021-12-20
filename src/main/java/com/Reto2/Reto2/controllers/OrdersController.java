@@ -7,19 +7,21 @@ package com.Reto2.Reto2.controllers;
 
 import com.Reto2.Reto2.models.Orders;
 import com.Reto2.Reto2.services.OrdersService;
-import java.util.Date;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  *
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.PutMapping;
  */
 @RestController
 @RequestMapping("/api/order")
+@CrossOrigin("*")
 public class OrdersController {
 
     @Autowired
@@ -38,38 +41,36 @@ public class OrdersController {
     }
 
     @GetMapping("/{id}")
-    public Orders getById(@PathVariable Integer id) {
-        return ordersService.getById(id);
-    }
-
-    @PutMapping("/update")
-    public ResponseEntity<Orders> update(@RequestBody Orders orders) {
-        Orders p = ordersService.update(orders);
-        return new ResponseEntity(p, HttpStatus.CREATED);
+    public Optional<Orders> getOrder(@PathVariable("id") Integer id) {
+        return ordersService.getOrder(id);
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Orders> save(@RequestBody Orders orders) {
-        Orders p = ordersService.save(orders);
-        return new ResponseEntity(p, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Orders create(@RequestBody Orders order) {
+        return ordersService.create(order);
+    }
+
+    @PutMapping("/update")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Orders update(@RequestBody Orders order) {
+        return ordersService.update(order);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Integer id) {
-        ordersService.delete(id);
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public boolean delete(@PathVariable("id") Integer id) {
+        return ordersService.delete(id);
     }
 
-    //Reto 3:Ordenes de pedido asociadas a los asesores de una zona
     @GetMapping("/zona/{zone}")
-    public List<Orders> findByZone(@PathVariable("zone") String zone) {
-        return ordersService.findByZone(zone);
+    public List<Orders> getZone(@PathVariable("zone") String zone) {
+        return ordersService.getZone(zone);
     }
 
-    //Reto 4:Ordenes de pedido asociadas a los asesores
     @GetMapping("/salesman/{id}")
-    public List<Orders> findByZone(@PathVariable("id") Integer id) {
-        return ordersService.findBySalesManId(id);
+    public List<Orders> getBySalesManId(@PathVariable("id") Integer id) {
+        return ordersService.getBySalesManId(id);
     }
 
     @GetMapping("/state/{status}/{id}")
@@ -81,5 +82,4 @@ public class OrdersController {
     public List<Orders> getByRegisterDayAndSalesManId(@PathVariable("registerDay") String registerDay, @PathVariable("id") Integer id) {
         return ordersService.getByRegisterDayAndSalesManId(registerDay, id);
     }
-
 }

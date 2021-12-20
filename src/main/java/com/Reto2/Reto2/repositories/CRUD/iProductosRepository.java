@@ -6,12 +6,19 @@
 package com.Reto2.Reto2.repositories.CRUD;
 
 import com.Reto2.Reto2.models.Productos;
+import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 /**
  *
  * @author David
  */
-public interface iProductosRepository extends MongoRepository<Productos, String>{
-    
+public interface iProductosRepository extends MongoRepository<Productos, String> {
+
+    public List<Productos> findByPriceLessThanEqual(double price);
+
+    @Query("{'description':{'$regex':'?0','$options':'i'}}")
+    public List<Productos> findByDescriptionLike(String description);
+
 }

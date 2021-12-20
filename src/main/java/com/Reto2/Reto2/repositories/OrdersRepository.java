@@ -28,36 +28,44 @@ public class OrdersRepository {
         return crudRepository.findAll();
     }
 
-    public Optional<Orders> getById(Integer id) {
+    public Optional<Orders> getOrder(Integer id) {
         return crudRepository.findById(id);
     }
 
-    public Orders save(Orders orders) {
-        return crudRepository.save(orders);
+    public Orders create(Orders order) {
+        return crudRepository.save(order);
     }
 
-    public void delete(Integer id) {
-        crudRepository.deleteById(id);
+    public void update(Orders order) {
+        crudRepository.save(order);
     }
 
-    public List<Orders> findByZone(String zone) {
-        return crudRepository.findByZone(zone);
+    public void delete(Orders order) {
+        crudRepository.delete(order);
     }
 
-    public List<Orders> findBySalesManId(Integer id) {
+    public List<Orders> getZone(String zone) {
+        return crudRepository.findBySalesManZone(zone);
+    }
+
+    public List<Orders> getBySalesManId(Integer id) {
         return crudRepository.findBySalesManId(id);
     }
-    
-    public List<Orders> getBySalesManIdAndStatus(Integer id, String status){
+
+    public List<Orders> getBySalesManIdAndStatus(Integer id, String status) {
         return crudRepository.findBySalesManIdAndStatus(id, status);
     }
 
-    public List<Orders> getByRegisterDayAndSalesManId(String registerDay, Integer id){
+    public List<Orders> getByRegisterDayAndSalesManId(String registerDay, Integer id) {
         try {
             return crudRepository.findByRegisterDayAndSalesManId(new SimpleDateFormat("yyyy-MM-dd").parse(registerDay), id);
         } catch (ParseException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public Optional<Orders> lastOrderId() {
+        return crudRepository.findTopByOrderByIdDesc();
     }
 }

@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,67 +20,110 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class OrdersService {
-     @Autowired
+
+    @Autowired
     private OrdersRepository ordersRepository;
 
     public List<Orders> getAll() {
         return ordersRepository.getAll();
     }
 
-    public Orders getById(Integer id) {
-        return ordersRepository.getById(id).orElse(null);
+    public Optional<Orders> getOrder(Integer id) {
+        return ordersRepository.getOrder(id);
     }
 
-    public Orders update(Orders orders) {
-        if (orders.getId() == null) 
-            return orders;
-        
+    public Orders create(Orders order) {
+        //if (order.getId() != null) {
+        //    return ordersRepository.create(order);
+        //} else {
+        //    return order;
+       // }
 
-        Optional<Orders> existeOrden = ordersRepository.getById(orders.getId());
+        //obtiene el maximo id existente en la coleccion
+        Optional<Orders> userIdMaximo = ordersRepository.lastOrderId();
 
-        if (existeOrden.isEmpty()) 
-            return orders;
-        
-         //System.out.println(existeOrden);
-        Orders orders1 = new Orders(existeOrden.get().getId(), existeOrden.get().getRegisterDay(), orders.getStatus(), existeOrden.get().getSalesMan(), existeOrden.get().getProducts(), existeOrden.get().getQuantities());
-        return ordersRepository.save(orders1);
+        //si el id del Usaurio que se recibe como parametro es nulo, entonces valida el maximo id existente en base de datos
+        if (order.getId() == null) {
+            //valida el maximo id generado, si no hay ninguno aun el primer id sera 1
+            if (userIdMaximo.isEmpty()) {
+                order.setId(1);
+            } //si retorna informacion suma 1 al maximo id existente y lo asigna como el codigo del usuario
+            else {
+                order.setId(userIdMaximo.get().getId() + 1);
+            }
+        }
+
+        Optional<Orders> e = ordersRepository.getOrder(order.getId());
+        if (e.isEmpty()) {
+                return ordersRepository.create(order);
+        } else {
+            return order;
+        }
     }
 
-    public Orders save(Orders orders) {
+    public Orders update(Orders order) {
+        if (order.getId() != null) {
+            Optional<Orders> orden = ordersRepository.getOrder(order.getId());
+            if (!orden.isEmpty()) {
 
-        if (orders.getId()== null) 
-            return orders;
+                if (order.getId() != null) {
+                    orden.get().setId(order.getId());
+                }
+                if (order.getRegisterDay() != null) {
+                    orden.get().setRegisterDay(order.getRegisterDay());
+                }
+                if (order.getStatus() != null) {
+                    orden.get().setStatus(order.getStatus());
+                }
+                if (order.getSalesMan() != null) {
+                    orden.get().setStatus(order.getStatus());
+                }
+                if (order.getSalesMan() != null) {
+                    orden.get().setSalesMan(order.getSalesMan());
+                }
 
+                if (order.getProducts() != null) {
+                    orden.get().setProducts(order.getProducts());
+                }
 
-        Optional<Orders> existeOrden = ordersRepository.getById(orders.getId());
-
-        if (existeOrden.isPresent()) 
-            return orders;
-        
-
-        return ordersRepository.save(orders);
+                if (order.getQuantities() != null) {
+                    orden.get().setQuantities(order.getQuantities());
+                }
+                ordersRepository.update(orden.get());
+                return orden.get();
+            } else {
+                return order;
+            }
+        } else {
+            return order;
+        }
     }
 
-    public void delete(Integer id) {
-        ordersRepository.delete(id);
+    public boolean delete(Integer id) {
+        return getOrder(id).map(order -> {
+            ordersRepository.delete(order);
+            return true;
+        }).orElse(false);
     }
-    
-    //Ordenes de pedido asociadas a los asesores de una zona
-    public List<Orders> findByZone(String zone) {
-        return ordersRepository.findByZone(zone);
+
+    public List<Orders> getZone(String zone) {
+        return ordersRepository.getZone(zone);
     }
-    
-    //Ordenes de pedido asociadas al asesor
-    public List<Orders> findBySalesManId(Integer id) {
-        return ordersRepository.findBySalesManId(id);
+
+    public List<Orders> getBySalesManId(Integer id) {
+        return ordersRepository.getBySalesManId(id);
     }
-    
-    public List<Orders> getBySalesManIdAndStatus(Integer id, String status){
+
+    public List<Orders> getBySalesManIdAndStatus(Integer id, String status) {
         return ordersRepository.getBySalesManIdAndStatus(id, status);
     }
 
-    public List<Orders> getByRegisterDayAndSalesManId(String registerDay, Integer id){
-        return ordersRepository.getByRegisterDayAndSalesManId(registerDay,id);
+    public List<Orders> getByRegisterDayAndSalesManId(String registerDay, Integer id) {
+        return ordersRepository.getByRegisterDayAndSalesManId(registerDay, id);
     }
-    
+
+    public Orders create(Order order) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

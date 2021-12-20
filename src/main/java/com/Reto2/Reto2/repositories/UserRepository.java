@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.Reto2.Reto2.repositories;
 
 import com.Reto2.Reto2.models.Users;
@@ -20,32 +15,44 @@ import org.springframework.stereotype.Repository;
 public class UserRepository {
 
     @Autowired
-    private iUsersRepository crudRepository;
+    private iUsersRepository userCrudRepository;
 
     public List<Users> getAll() {
-        return crudRepository.findAll();
+        return (List<Users>) userCrudRepository.findAll();
     }
 
-    public Optional<Users> getById(Integer id) {
-        return crudRepository.findById(id);
+    public Optional<Users> getUser(int id) {
+        return userCrudRepository.findById(id);
     }
 
-    public Users save(Users users) {
-        return crudRepository.save(users);
+    public Users create(Users user) {
+        return userCrudRepository.save(user);
     }
 
-    public void delete(Integer id) {
-        crudRepository.deleteById(id);
+    public void update(Users user) {
+        userCrudRepository.save(user);
     }
 
-    public boolean existeEmail(String email) {
-        Optional<Users> usuario = crudRepository.findByEmail(email);
+    public void delete(Users user) {
+        userCrudRepository.delete(user);
+    }
+
+    public boolean emailExists(String email) {
+        Optional<Users> usuario = userCrudRepository.findByEmail(email);
 
         return !usuario.isEmpty();
     }
-    
-    public Optional<Users> autenticarUsuario(String email, String password) {
-        return crudRepository.findByEmailAndPassword(email, password);
+
+    public List<Users> findByMonthBirthtDay(String monthBirthtDay) {
+        return userCrudRepository.findByMonthBirthtDay(monthBirthtDay);
+    }
+
+    public Optional<Users> authenticateUser(String email, String password) {
+        return userCrudRepository.findByEmailAndPassword(email, password);
+    }
+
+    public Optional<Users> lastUserId() {
+        return userCrudRepository.findTopByOrderByIdDesc();
     }
 
 }
